@@ -25,13 +25,71 @@ class SerialPort {
    * このシリアルポートが接続しているデバイスとのストリーム
    * @var resource
    */
-  protected $_stream;
+  private $_stream;
   
   /**
    * SerialPort::$_stream の file descriptor
    * @var int 
    */
   private $_streamFd;
+  
+  /**
+   * Win32Handle 型のリソース。
+   * Windows においてのみ使用されます。
+   * @var resource
+   */
+  private $_win32Handle;
+  
+  /**
+   * CanonicalBuffer 型のリソース。
+   * Windows においてのみ使用されます。
+   * @var resource 
+   */
+  private $_win32CanonicalBuffer;
+  
+  /**
+   * カノニカル入力モードであるかどうか、状態を保存する変数。
+   * Windows においてのみ使用されます。
+   * @var bool
+   */
+  private $_win32IsCanonical;
+  
+  /**
+   * カノニカル入力の際に用いられる改行文字を定義します。
+   * Windows においてのみ使用されます。
+   * @var string 
+   */
+  private $_win32NewLine;
+  
+  /**
+   * このシリアルポートの DTR(Data Terminal Ready) の状態を保存します。
+   * Windows においてのみ使用されます。
+   * @var bool
+   */
+  private $_win32Dtr;
+  
+  /**
+   * このシリアルポートの RTS(Request To Send) の状態を保存します。
+   * Windows においてのみ使用されます。
+   * @var bool
+   */
+  private $_win32Rts;
+  
+  /**
+   * 非カノニカル入力モードの際に SerialPort::read() のタイムアウトを規定するための変数です。
+   * Windows においてのみ使用されます。
+   * POSIX システムの termios.c_cc プロパティの VTIME インデックスに相当します。
+   * @var int 
+   */
+  private $_win32VTime;
+  
+  /**
+   * 非カノニカル入力モードの際に SerialPort::read() のタイムアウトを規定するための変数です。
+   * Windows においてのみ使用されます。
+   * POSIX システムの termios.c_cc プロパティの VMIN インデックスに相当します。
+   * @var int 
+   */
+  private $_win32VMin;
 
   /**
    * SerialPort の新しいインスタンスを生成します。
@@ -256,6 +314,18 @@ class SerialPort {
   public function isCanonical() {}
   
   /**
+   * Windows 上で動作する場合のカノニカル入力の際に用いられる改行文字を返します。
+   * @return string カノニカル入力の際に用いられる改行文字
+   */
+  public function getWin32NewLine(){}
+  
+  /**
+   * Windows 上で動作する場合のカノニカル入力の際に用いられる改行文字を定義します。
+   * @return self このインスタンス
+   */
+  public function setWin32NewLine($nl) {}
+  
+  /**
    * 現在設定されている VMIN の値を返します。
    * 
    * @return int 現在の VMIN 値
@@ -293,7 +363,64 @@ class SerialPort {
    */
   public function setVTime($vtime) {}
 
-
+  /**
+   * Win32 API の COMMTIMEOUTS 構造体の ReadIntervalTimeout メンバを返します。
+   * @return int COMMTIMEOUTS 構造体の ReadIntervalTimeout メンバ
+   */
+  public function getWin32ReadIntervalTimeout() {}
+  
+  /**
+   * Win32 API の COMMTIMEOUTS 構造体の ReadIntervalTimeout メンバを設定します。
+   * @return self このインスタンス
+   */
+  public function setWin32ReadIntervalTimeout() {}
+  
+  /**
+   * Win32 API の COMMTIMEOUTS 構造体の ReadTotalTimeoutMultiplier メンバを返します。
+   * @return int COMMTIMEOUTS 構造体の ReadTotalTimeoutMultiplier メンバ
+   */
+  public function getWin32ReadTotalTimeoutMultiplier() {}
+  
+  /**
+   * Win32 API の COMMTIMEOUTS 構造体の ReadTotalTimeoutMultiplier メンバを設定します。
+   * @return self このインスタンス
+   */
+  public function setWin32ReadTotalTimeoutMultiplier() {}
+  
+  /**
+   * Win32 API の COMMTIMEOUTS 構造体の ReadTotalTimeoutConstant メンバを返します。
+   * @return int COMMTIMEOUTS 構造体の ReadTotalTimeoutConstant メンバ
+   */
+  public function getWin32ReadTotalTimeoutConstant() {}
+  
+  /**
+   * Win32 API の COMMTIMEOUTS 構造体の  ReadTotalTimeoutConstantメンバを設定します。
+   * @return self このインスタンス
+   */
+  public function setWin32ReadTotalTimeoutConstant() {}
+  /**
+   * Win32 API の COMMTIMEOUTS 構造体の WriteTotalTimeoutMultiplier メンバを返します。
+   * @return int COMMTIMEOUTS 構造体の WriteTotalTimeoutMultiplier メンバ
+   */
+  public function getWin32WriteTotalTimeoutMultiplier() {}
+  
+  /**
+   * Win32 API の COMMTIMEOUTS 構造体の WriteTotalTimeoutMultiplier メンバを設定します。
+   * @return self このインスタンス
+   */
+  public function setWin32WriteTotalTimeoutMultiplier() {}
+  /**
+   * Win32 API の COMMTIMEOUTS 構造体の WriteTotalTimeoutConstant メンバを返します。
+   * @return int COMMTIMEOUTS 構造体の WriteTotalTimeoutConstant メンバ
+   */
+  public function getWin32WriteTotalTimeoutConstant() {}
+  
+  /**
+   * Win32 API の COMMTIMEOUTS 構造体の WriteTotalTimeoutConstant メンバを設定します。
+   * @return self このインスタンス
+   */
+  public function setWin32WriteTotalTimeoutConstant() {}
+  
   /**
    * EVEN パリティチェック
    */
@@ -308,6 +435,18 @@ class SerialPort {
    * パリティチェックなし
    */
   const PARITY_NONE = "PARITY_NONE";
+  
+  /**
+   * パリティビットは常に mark voltage にセットされます。
+   * このモードは Windows でのみ動作します。
+   */
+  const PARITY_MARK = "PARITY_MARK";
+  
+  /**
+   * パリティビットは常に space voltage にセットされます。
+   * このモードは Windows でのみ動作します。
+   */
+  const PARITY_SPACE = "PARITY_SPACE";
   
   /**
    * デフォルトのパリティチェック。実際は SerialPort::PARITY_NONE 。
@@ -339,6 +478,10 @@ class SerialPort {
   const CHAR_SIZE_7 = 7;
   const CHAR_SIZE_8 = 8;
   const CHAR_SIZE_DEFAULT = SerialPort::CHAR_SIZE_8;
+  
+  const STOP_BITS_1_0 = 10;
+  const STOP_BITS_1_5 = 15;
+  const STOP_BITS_2_0 = 20;
 
   const BAUD_RATE_50 = 50;
   const BAUD_RATE_75 = 75;
