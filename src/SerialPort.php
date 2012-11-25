@@ -321,6 +321,7 @@ class SerialPort {
   
   /**
    * Windows 上で動作する場合のカノニカル入力の際に用いられる改行文字を定義します。
+   * @param string $nl カノニカル入力に用いる改行文字
    * @return self このインスタンス
    */
   public function setWin32NewLine($nl) {}

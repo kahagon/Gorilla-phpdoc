@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+    <title>Gorilla API Reference</title>
+    <parser>
+        <target>output</target>
+        <markers>
+            <item>TODO</item>
+            <item>FIXME</item>
+        </markers>
+        <extensions>
+            <extension>php</extension>
+            <extension>php3</extension>
+            <extension>phtml</extension>
+        </extensions>
+        <visibility></visibility>
+    </parser>
+    <transformer>
+        <target>output</target>
+    </transformer>
+    <transformations>
+        <!--template name="./templates/gorilla-responsive" /-->
+        <template name="gorilla-old-ocean" />
+    </transformations>
+    <files>
+        <directory>src</directory>
+    </files>
+</phpdoc>
